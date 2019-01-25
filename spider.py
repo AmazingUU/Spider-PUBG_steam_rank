@@ -1,28 +1,48 @@
+import time
+from queue import Queue
+
 import requests
 
-url = 'https://api.xiaoheihe.cn/game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548401877&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&hkey=c1aa1c85ada7b8afee362867c291bc84&limit=30&offset=0'
-headers = {
-    'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 12.1.2; Scale/2.00)'
-}
-json = requests.get(url,headers=headers).json()
-rank_list = json['result']['board']
-ranks = []
-for rank in rank_list:
-    data = {}
-    data['rank'] = rank['rank']
-    data['nickname'] = rank['nickname']
-    data['value'] = rank['value']
-    print(data)
-    ranks.append(data)
-rating_distribution_list = json['result']['rating_distribution']
-distributions = []
-for dis in rating_distribution_list:
-    data = {}
-    data['range'] = dis['start'] + '~' + dis['end']
-    data['top'] = dis['top']
-    print(data)
-    distributions.append(data)
+def get_rank(url,headers):
+    json = requests.get(url,headers=headers).json()
+    rank_list = json['result']['board']
+    for rank in rank_list:
+        data = {}
+        data['rank'] = rank['rank']
+        data['nickname'] = rank['nickname']
+        data['value'] = rank['value']
+        # print(data)
+        yield data
 
+def get_distribution(url,headers):
+    json = requests.get(url,headers=headers).json()
+    rating_distribution_list = json['result']['rating_distribution']
+    for dis in rating_distribution_list:
+        data = {}
+        data['range'] = dis['start'] + '~' + dis['end']
+        data['top'] = dis['top']
+        # print(data)
+        yield data
+
+def put_into_queue(queue,url,headers):
+    for data in get_rank(url,headers):
+        queue.put_nowait(data)
+
+def get_from_queue(queue,db):
+    try:
+        data = queue.get_nowait()
+        
+    except:
+        print('queue is empty wait for a while...')
+        time.sleep(1)
+
+if __name__ == '__main__':
+    url = 'https://api.xiaoheihe.cn/game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548401877&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&hkey=c1aa1c85ada7b8afee362867c291bc84&limit=30&offset=0'
+    headers = {
+        'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 12.1.2; Scale/2.00)'
+    }
+    queue = Queue()
+    queue.put
 # /game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548402685&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&hkey=10fe9dc9bd15d63d7e8efbed1be202cd&limit=30&offset=0&season=2018-02
 # /game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548402745&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&hkey=4f448a5e004a33f68c3750c540560b1a&limit=30&offset=0&season=pc-2018-02
 # /game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548402881&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&hkey=b7205992fa31bba3f5fc396137bad193&limit=30&mode=solo&offset=0
