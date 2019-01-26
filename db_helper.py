@@ -1,9 +1,9 @@
 '''
 数据库操作类
-所需表：video、comment
+所需表：rank_list、distribution
 建表语句：
-create table if not exists video(id int primary key auto_increment,author varchar(30),video_id varchar(25),description text,like_count int(9),comment_count int(7),share_count int(8),music_author varchar(30),music_title varchar(50),filename text,download_url text,create_time datetime);
-create table if not exists comment(id int primary key auto_increment,video_id varchar(25),user varchar(30),content text,like_count int(7),comment_time datetime,beReplied_user varchar(30),beReplied_content text,beReplied_like_count int(7),beReplied_comment_time datetime,create_time datetime);
+create table if not exists rank_list(id int primary key auto_increment,ranks varchar(5),nickname varchar(30),value varchar(10),mode varchar(20),season varchar(20),category varchar(20),create_time datetime);
+create table if not exists distribution(id int primary key auto_increment,start varchar(10),end varchar(10),top varchar(20),mode varchar(20),season varchar(20),category varchar(20),create_time datetime);
 '''
 import time
 
@@ -43,38 +43,37 @@ class DbHelper(object):
         self.mutex = 1  # 锁定
         try:
             with self.db.cursor() as cursor:
-                sql = 'insert into rank(rank,nickname,value,mode,season,category,create_time) values(%s,%s,%s,%s,%s,%s,now())'
+                sql = 'insert into rank_list(ranks,nickname,value,mode,season,category,create_time) values(%s,%s,%s,%s,%s,%s,now())'
                 cursor.execute(sql, (
                 data['rank'], data['nickname'], data['value'], data['mode'], data['season'], data['category']))
                 self.db.commit()
                 # self.mutex = 0  # 解锁
-                print('{}\t{}\t{} insert into video'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
-                                                        data['rank'],data['nickname']))
+                print('{}\t{},{},{},{},{},{} insert into rank_list'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),data['mode'], data['season'], data['category'],
+                                                        data['rank'], data['nickname'], data['value']))
         except Exception as e:
             print('{}\tsave rank:{}\tnickname:{} fail,error:{}'.format(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['video_id'], str(e)))
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['rank'],data['nickname'], str(e)))
         finally:
             self.mutex = 0  # 解锁
 
-    def save_one_data_to_comment(self, data):
+    def save_one_data_to_distribution(self, data):
         while self.mutex == 1:  # connetion正在被其他线程使用，需要等待
             time.sleep(1)
             print('db connect is using...')
         self.mutex = 1  # 锁定
         try:
             with self.db.cursor() as cursor:
-                sql = 'insert into comment(video_id,user,content,like_count,comment_time,beReplied_user,beReplied_content,beReplied_like_count,beReplied_comment_time,create_time) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,now())'
+                sql = 'insert into distribution(start,end,top,mode,season,category,create_time) values(%s,%s,%s,%s,%s,%s,now())'
                 cursor.execute(sql, (
-                    data['video_id'], data['user'], data['content'], data['like_count'], data['comment_time'],
-                    data['beReplied_user'], data['beReplied_content'], data['beReplied_like_count'],
-                    data['beReplied_comment_time']))
+                    data['start'], data['end'], data['top'], data['mode'], data['season'],data['category']))
                 self.db.commit()
                 self.mutex = 0  # 解锁
-                print('{}\tuser:{} comment insert into comment'.format(
-                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['user']))
+                print('{}\t{},{},{},{},{},{}insert into distribution'.format(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['mode'], data['season'],data['category'],
+                    data['start'], data['end'], data['top']))
         except Exception as e:
-            print('{}\tsave user:{} comment fail,error:{}'.format(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['user'], str(e)))
+            print('{}\tsave distribution:{}~{} fail,error:{}'.format(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['start'], data['end'], str(e)))
         finally:
             self.mutex = 0  # 解锁
 
