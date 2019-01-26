@@ -6,18 +6,28 @@ import requests
 
 from db_helper import DbHelper
 
+def params2str(params):  # 参数转化成url中需要拼接的字符串
+    query = ''
+    for k, v in params.items():
+        query += '%s=%s&' % (k, v)
+    query = query.strip('&')
+    # print(query)
+    return query
 
 def get_rank(url,headers):
-    json = requests.get(url,headers=headers).json()
-    rank_list = json['result']['board']
-    for rank in rank_list:
-        data = {}
-        data['type'] = 'rank'
-        data['rank'] = rank['rank']
-        data['nickname'] = rank['nickname']
-        data['value'] = rank['value']
-        # print(data)
-        yield data
+    try:
+        json = requests.get(url,headers=headers).json()
+        rank_list = json['result']['board']
+        for rank in rank_list:
+            data = {}
+            data['type'] = 'rank'
+            data['rank'] = rank['rank']
+            data['nickname'] = rank['nickname']
+            data['value'] = rank['value']
+            # print(data)
+            yield data
+    except Exception as e:
+        print('get_rank() error,',str(e))
 
 def get_distribution(url,headers):
     json = requests.get(url,headers=headers).json()
