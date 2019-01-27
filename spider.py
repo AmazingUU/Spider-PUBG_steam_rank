@@ -20,6 +20,7 @@ def get_rank(url,headers):
         rank_list = json['result']['board']
         for rank in rank_list:
             data = {}
+            data['result'] = 'success'
             data['type'] = 'rank'
             data['rank'] = rank['rank']
             data['nickname'] = rank['nickname']
@@ -28,53 +29,73 @@ def get_rank(url,headers):
             yield data
     except Exception as e:
         print('get_rank() error,',str(e))
+        data = {}
+        data['result'] = 'error'
+        yield data
+
 
 def get_distribution(url,headers):
-    json = requests.get(url,headers=headers).json()
-    rating_distribution_list = json['result']['rating_distribution']
-    for dis in rating_distribution_list:
+    try:
+        json = requests.get(url,headers=headers).json()
+        rating_distribution_list = json['result']['rating_distribution']
+        for dis in rating_distribution_list:
+            data = {}
+            data['result'] = 'success'
+            data['type'] = 'distribution'
+            data['start'] = dis['start']
+            data['end'] = dis['end']
+            data['top'] = dis['top']
+            # print(data)
+            yield data
+    except Exception as e:
+        print('get_rank() error,',str(e))
         data = {}
-        data['type'] = 'distribution'
-        data['start'] = dis['start']
-        data['end'] = dis['end']
-        data['top'] = dis['top']
-        # print(data)
+        data['result'] = 'error'
         yield data
 
 def put_into_queue(queue,url,headers):
     for data in get_rank(url,headers):
-        queue.put_nowait(data)
+        if data['result'] == 'success':
+            queue.put_nowait(data)
+        elif data['result'] == 'error':
+            continue
     for data in get_distribution(url,headers):
-        queue.put_nowait(data)
+        if data['result'] == 'success':
+            queue.put_nowait(data)
+        elif data['result'] == 'error':
+            continue
 
 def get_from_queue(queue,db):
-    try:
-        data = queue.get_nowait()
-        if data['type'] == 'rank':
-            db.save_one_data_to_rank(data)
-            queue.task_done()
-        elif data['type'] == 'distribution':
-            db.save_one_data_to_distribution(data)
-            queue.task_done()
-    except:
-        print('queue is empty wait for a while...')
-        time.sleep(1)
+    while True:
+        try:
+            data = queue.get_nowait()
+            if data['type'] == 'rank':
+                db.save_one_data_to_rank(data)
+                queue.task_done()
+            elif data['type'] == 'distribution':
+                db.save_one_data_to_distribution(data)
+                queue.task_done()
+        except:
+            print('queue is empty wait for a while...')
+            time.sleep(1)
 
 if __name__ == '__main__':
+    mode = input('请选择模式(all,solo,duo,squad,solo-fpp,duo-fpp,squad-fpp)')
+    season = input('请选择赛季()')
+
     url = 'https://api.xiaoheihe.cn/game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=12.1.2&_time=1548401877&version=1.1.52&device_id=6635D9A6-4C84-43E9-953F-BF4304E19324&heybox_id=5141514&limit=30&offset=0&mode=solo&season=pc-2018-02&category=WinRatio'
     headers = {
         'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 12.1.2; Scale/2.00)'
     }
-    params = [{'mode':'all',}]
 
     configs = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'db': 'pubg_steam'}
     db = DbHelper()
     db.connenct(configs)
 
     queue = Queue()
-    Thread(target=put_into_queue, args=(queue,url,headers)).start()
+    Thread(target=put_into_queue, args=(queue,url,headers), daemon=True).start()
     time.sleep(2)
-    Thread(target=get_from_queue, args=(queue, db)).start()
+    Thread(target=get_from_queue, args=(queue, db), daemon=True).start()
 
     queue.join()
     db.close()
