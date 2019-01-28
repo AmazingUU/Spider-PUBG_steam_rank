@@ -48,7 +48,7 @@ class DbHelper(object):
                 data['rank'], data['nickname'], data['value'], data['mode'], data['season'], data['category']))
                 self.db.commit()
                 # self.mutex = 0  # 解锁
-                print('{}\t{},{},{},{},{},{} insert into rank_list'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),data['mode'], data['season'], data['category'],
+                print('{}\t{},{},{},{},{},{}\tinsert into rank_list'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),data['mode'], data['season'], data['category'],
                                                         data['rank'], data['nickname'], data['value']))
         except Exception as e:
             print('{}\tsave rank:{}\tnickname:{} fail,error:{}'.format(
@@ -68,7 +68,7 @@ class DbHelper(object):
                     data['start'], data['end'], data['top'], data['mode'], data['season'],data['category']))
                 self.db.commit()
                 self.mutex = 0  # 解锁
-                print('{}\t{},{},{},{},{},{}insert into distribution'.format(
+                print('{}\t{},{},{},{},{},{}\tinsert into distribution'.format(
                     time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())), data['mode'], data['season'],data['category'],
                     data['start'], data['end'], data['top']))
         except Exception as e:
