@@ -121,6 +121,7 @@ if __name__ == '__main__':
 
     headers = {
         'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 10.3.3; Scale/2.00)',
+        'Referer':'http://api.maxjia.com/',
         'Cookie':'pkey=MTU0ODQwNjM3Ni4xM181MTQxNTE0YWh3eGdwenRmem9zaW9lZQ____;hkey=5bb093056ccd2fcd61073e4d84b94d05'
     }
     r = requests.get('https://api.xiaoheihe.cn/game/pubg/get_stats_detail/?lang=zh-cn&os_type=iOS&os_version=10.3.3&_time=1548776142&version=1.1.52&device_id=D2AA4D4F-AC80-476C-BFE1-CBD83AB74133&heybox_id=5141514&hkey=06a344301cb7c6cdc1136a62c061c978&fpp=0&mode=solo&nickname=HuYaTV_15310849&region=steam&season=pc-2018-02',
