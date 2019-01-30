@@ -122,8 +122,19 @@ if __name__ == '__main__':
     headers = {
         'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 10.3.3; Scale/2.00)',
         'Referer':'http://api.maxjia.com/',
-        'Cookie':'pkey=MTU0ODQwNjM3Ni4xM181MTQxNTE0YWh3eGdwenRmem9zaW9lZQ____;hkey=5bb093056ccd2fcd61073e4d84b94d05'
+        # 'Cookie':'pkey=MTU0ODQwNjM3Ni4xM181MTQxNTE0YWh3eGdwenRmem9zaW9lZQ____;hkey=5bb093056ccd2fcd61073e4d84b94d05'
     }
-    r = requests.get('https://api.xiaoheihe.cn/game/pubg/get_stats_detail/?lang=zh-cn&os_type=iOS&os_version=10.3.3&_time=1548776142&version=1.1.52&device_id=D2AA4D4F-AC80-476C-BFE1-CBD83AB74133&heybox_id=5141514&hkey=06a344301cb7c6cdc1136a62c061c978&fpp=0&mode=solo&nickname=HuYaTV_15310849&region=steam&season=pc-2018-02',
-                     headers=headers).json()
+    # r = requests.get('https://api.xiaoheihe.cn/game/pubg/get_stats_detail/?lang=zh-cn&os_type=iOS&os_version=10.3.3&_time=1548776142&version=1.1.52&device_id=D2AA4D4F-AC80-476C-BFE1-CBD83AB74133&heybox_id=5141514&hkey=06a344301cb7c6cdc1136a62c061c978&fpp=0&mode=solo&nickname=HuYaTV_15310849&region=steam&season=pc-2018-02',
+    #                  headers=headers).json()
+    # print(r)
+
+    form_data = {
+        'phone_num':'M6Y3WpfSNET9W4ZwcML1tUx+jvOWtaDKwoUM3ABM+o7AXi8yZKplkUSM3u3R9cN+x4CNZ2Mo/SHFqB8nQWNt9WHEKc3iC0nSfTfbhlLJECCLpB60Cpbo7HKjE9dlY8s7kJY8bCn+xHAXEGg/2avB2SRPFLPo+Nm0JO6R07Sof4U=',
+        'pwd':'OKNkTFqOU26Adb/9IAvze4K+u6aBHpd9cvBuyRWWAifDyb48wAvLbGUHfj0ZtTvGdg3Y2k8x9EyzcvW/G36R9ukCVpa+xJFztKM8GIl1q71OPNSTx0u1+EM6JiZnGxvPWApt0coRLm64BkRBcbhgliSauUlheBBfoAIADSNlXpw='
+    }
+    r = requests.post('https://api.xiaoheihe.cn/account/login/?lang=zh-cn&os_type=iOS&os_version=10.3.3&_time=1548829094&version=1.1.52&device_id=D2AA4D4F-AC80-476C-BFE1-CBD83AB74133&heybox_id=-1&hkey=7c0718852ad0b14cdaf4e844f77ff98e',
+                     data=form_data,headers=headers).json()
     print(r)
+
+
+https://www.cnblogs.com/cdwp8/p/4355819.html
