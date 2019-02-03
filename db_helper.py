@@ -77,13 +77,19 @@ class DbHelper(object):
         finally:
             self.mutex = 0  # 解锁
 
-    # def find_all_detail(self):
-    #     try:
-    #         with self.db.cursor() as cursor:
-    #             sql = 'select url,filename from detail limit 10'
-    #             cursor.execute(sql)
-    #             res = cursor.fetchall()
-    #             return res
-    #     except Exception as e:
-    #         print('find_all_detail fail,error:', str(e))
-    #         return None
+    def find_today_rank(self):
+        while self.mutex == 1:  # connetion正在被其他线程使用，需要等待
+            time.sleep(1)
+            print('db connect is using...')
+        self.mutex = 1  # 锁定
+        try:
+            with self.db.cursor() as cursor:
+                sql = 'select nickname,mode,season from rank_list where to_days(create_time) = to_days(now())'
+                cursor.execute(sql)
+                res = cursor.fetchall()
+                return res
+        except Exception as e:
+            print('find_today_rank fail,error:', str(e))
+            return None
+        finally:
+            self.mutex = 0  # 解锁
