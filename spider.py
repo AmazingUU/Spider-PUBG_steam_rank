@@ -67,35 +67,60 @@ def get_Cookie(form_data,headers):
 def get_player_overview(rank,url,params,headers):
     try:
         json = requests.get(url, params=params, headers=headers).json()
-        detail_list = json['result']
-        for detail in detail_list:
-            data = {}
-            data['overview']['result'] = 'success'
-            data['overview']['type'] = 'overview'
+        detail = json['result']
+        # for detail in detail_list:
+        data = {}
+        # data['overview']['result'] = 'success'
+        # data['overview']['type'] = 'overview'
+        #
+        # data['overview']['mode'] = rank['mode']
+        # data['overview']['season'] = rank['season']
+        # data['overview']['nickname'] = rank['nickname']
+        #
+        # data['overview']['rateing'] = detail['overview'][0]['value']
+        # data['overview']['win_times'] = detail['overview'][1]['value']
+        # data['overview']['win_times_rank'] = detail['overview'][1]['rank']
+        # data['overview']['top10_times'] = detail['overview'][2]['value']
+        # data['overview']['top10_times_rank'] = detail['overview'][2]['rank']
+        # data['overview']['avg_kills'] = detail['overview'][3]['value']
+        # data['overview']['avg_kills_rank'] = detail['overview'][3]['rank']
+        # data['overview']['ranks'] = detail['overview'][4]['value']
+        # data['overview']['win_ratio'] = detail['overview'][5]['value']
+        # data['overview']['win_ratio_rank'] = detail['overview'][5]['rank']
+        # data['overview']['top10_ratio'] = detail['overview'][6]['value']
+        # data['overview']['top10_ratio_rank'] = detail['overview'][6]['rank']
+        # data['overview']['k_d'] = detail['overview'][7]['value']
+        # data['overview']['k_d_rank'] = detail['overview'][7]['rank']
 
-            data['overview']['mode'] = rank['mode']
-            data['overview']['season'] = rank['season']
-            data['overview']['nickname'] = rank['nickname']
+        data['result'] = 'success'
+        data['type'] = 'overview'
 
-            data['overview']['rateing'] = detail['overview'][0]['value']
-            data['overview']['win_times'] = detail['overview'][1]['value']
-            data['overview']['win_times_rank'] = detail['overview'][1]['rank']
-            data['overview']['top10_times'] = detail['overview'][2]['value']
-            data['overview']['top10_times_rank'] = detail['overview'][2]['rank']
-            data['overview']['avg_kills'] = detail['overview'][3]['value']
-            data['overview']['avg_kills_rank'] = detail['overview'][3]['rank']
-            data['overview']['ranks'] = detail['overview'][4]['value']
-            data['overview']['win_ratio'] = detail['overview'][5]['value']
-            data['overview']['win_ratio_rank'] = detail['overview'][5]['rank']
-            data['overview']['top10_ratio'] = detail['overview'][6]['value']
-            data['overview']['top10_ratio_rank'] = detail['overview'][6]['rank']
-            data['overview']['k_d'] = detail['overview'][7]['value']
-            data['overview']['k_d_rank'] = detail['overview'][7]['rank']
-            yield data
+        data['mode'] = rank['mode']
+        data['season'] = rank['season']
+        data['nickname'] = rank['nickname']
+
+        # print(detail)
+
+        data['rateing'] = detail['overview'][0]['value']
+        data['win_times'] = detail['overview'][1]['value']
+        data['win_times_rank'] = detail['overview'][1]['rank']
+        data['top10_times'] = detail['overview'][2]['value']
+        data['top10_times_rank'] = detail['overview'][2]['rank']
+        data['avg_kills'] = detail['overview'][3]['value']
+        data['avg_kills_rank'] = detail['overview'][3]['rank']
+        data['ranks'] = detail['overview'][4]['value']
+        data['win_ratio'] = detail['overview'][5]['value']
+        data['win_ratio_rank'] = detail['overview'][5]['rank']
+        data['top10_ratio'] = detail['overview'][6]['value']
+        data['top10_ratio_rank'] = detail['overview'][6]['rank']
+        data['k_d'] = detail['overview'][7]['value']
+        data['k_d_rank'] = detail['overview'][7]['rank']
+        yield data
     except Exception as e:
         print('get_player_overview() error,', str(e))
         data = {}
-        data['overview']['result'] = 'error'
+        # data['overview']['result'] = 'error'
+        data['result'] = 'error'
         yield data
 
 def put_into_queue(queue, url, params, headers):
@@ -133,17 +158,17 @@ def put_into_queue1(queue1, url, headers):
             p['fpp'] = '0'
             p['mode'] = rank['mode']
             for data in get_player_overview(rank,url, p, headers):
-                if data['overview']['result'] == 'success':
+                if data['result'] == 'success':
                     queue1.put_nowait(data)
-                elif data['overview']['result'] == 'error':
+                elif data['result'] == 'error':
                     continue
 
 def get_from_queue1(queue1, db):
     while True:
         try:
             data = queue1.get_nowait()
-            if data['overview']['type'] == 'overview':
-                db.save_one_data_to_overview(data['overview'])
+            if data['type'] == 'overview':
+                db.save_one_data_to_player_overview(data)
                 queue1.task_done()
             # elif data['overview']['type'] == 'distribution':
             #     db.save_one_data_to_distribution(data)
@@ -189,16 +214,8 @@ if __name__ == '__main__':
     #
     # queue.join()
 
-    # for rank in db.find_today_rank():
-    #     print(rank)
+    headers['Referer'] = 'http://api.maxjia.com/'
 
-    # headers['Referer'] = 'http://api.maxjia.com/'
-
-    # headers = {
-    #     'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 10.3.3; Scale/2.00)',
-    #     'Referer':'http://api.maxjia.com/',
-    #     'Cookie':'pkey=MTU0OTE3NzI0OS42N18xNDkwOTc4OXFqbXJvZ2xjeXNpaGZvcms__'
-    # }
     form_data = {
         'phone_num':'M6Y3WpfSNET9W4ZwcML1tUx+jvOWtaDKwoUM3ABM+o7AXi8yZKplkUSM3u3R9cN+x4CNZ2Mo/SHFqB8nQWNt9WHEKc3iC0nSfTfbhlLJECCLpB60Cpbo7HKjE9dlY8s7kJY8bCn+xHAXEGg/2avB2SRPFLPo+Nm0JO6R07Sof4U=',
         'pwd':'OKNkTFqOU26Adb/9IAvze4K+u6aBHpd9cvBuyRWWAifDyb48wAvLbGUHfj0ZtTvGdg3Y2k8x9EyzcvW/G36R9ukCVpa+xJFztKM8GIl1q71OPNSTx0u1+EM6JiZnGxvPWApt0coRLm64BkRBcbhgliSauUlheBBfoAIADSNlXpw='
@@ -216,7 +233,7 @@ if __name__ == '__main__':
     url1 = 'https://api.xiaoheihe.cn/game/pubg/get_stats_detail/?heybox_id=14909789&region=steam'
     queue1 = Queue()
     Thread(target=put_into_queue1, args=(queue1, url1, headers), daemon=True).start()
-    time.sleep(600)
+    time.sleep(10)
     Thread(target=get_from_queue1, args=(queue1, db), daemon=True).start()
 
     queue1.join()
