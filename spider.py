@@ -64,62 +64,105 @@ def get_Cookie(form_data,headers):
         print('get_Cookie error:',str(e))
         return None
 
-def get_player_overview(rank,url,params,headers):
+def get_player_data(rank,url,params,headers):
     try:
         json = requests.get(url, params=params, headers=headers).json()
         detail = json['result']
         # for detail in detail_list:
+
         data = {}
+        # data['overview'].setdefault('result','success')
         # data['overview']['result'] = 'success'
         # data['overview']['type'] = 'overview'
-        #
-        # data['overview']['mode'] = rank['mode']
-        # data['overview']['season'] = rank['season']
-        # data['overview']['nickname'] = rank['nickname']
-        #
-        # data['overview']['rateing'] = detail['overview'][0]['value']
-        # data['overview']['win_times'] = detail['overview'][1]['value']
-        # data['overview']['win_times_rank'] = detail['overview'][1]['rank']
-        # data['overview']['top10_times'] = detail['overview'][2]['value']
-        # data['overview']['top10_times_rank'] = detail['overview'][2]['rank']
-        # data['overview']['avg_kills'] = detail['overview'][3]['value']
-        # data['overview']['avg_kills_rank'] = detail['overview'][3]['rank']
-        # data['overview']['ranks'] = detail['overview'][4]['value']
-        # data['overview']['win_ratio'] = detail['overview'][5]['value']
-        # data['overview']['win_ratio_rank'] = detail['overview'][5]['rank']
-        # data['overview']['top10_ratio'] = detail['overview'][6]['value']
-        # data['overview']['top10_ratio_rank'] = detail['overview'][6]['rank']
-        # data['overview']['k_d'] = detail['overview'][7]['value']
-        # data['overview']['k_d_rank'] = detail['overview'][7]['rank']
-
         data['result'] = 'success'
-        data['type'] = 'overview'
+        data.setdefault('overview',{})
 
-        data['mode'] = rank['mode']
-        data['season'] = rank['season']
-        data['nickname'] = rank['nickname']
+        data['overview']['mode'] = rank['mode']
+        data['overview']['season'] = rank['season']
+        data['overview']['nickname'] = rank['nickname']
 
-        # print(detail)
+        data['overview']['rateing'] = detail['overview'][0]['value']
+        data['overview']['win_times'] = detail['overview'][1]['value']
+        data['overview']['win_times_rank'] = detail['overview'][1]['rank']
+        data['overview']['top10_times'] = detail['overview'][2]['value']
+        data['overview']['top10_times_rank'] = detail['overview'][2]['rank']
+        data['overview']['avg_kills'] = detail['overview'][3]['value']
+        data['overview']['avg_kills_rank'] = detail['overview'][3]['rank']
+        data['overview']['ranks'] = detail['overview'][4]['value']
+        data['overview']['win_ratio'] = detail['overview'][5]['value']
+        data['overview']['win_ratio_rank'] = detail['overview'][5]['rank']
+        data['overview']['top10_ratio'] = detail['overview'][6]['value']
+        data['overview']['top10_ratio_rank'] = detail['overview'][6]['rank']
+        data['overview']['k_d'] = detail['overview'][7]['value']
+        data['overview']['k_d_rank'] = detail['overview'][7]['rank']
 
-        data['rateing'] = detail['overview'][0]['value']
-        data['win_times'] = detail['overview'][1]['value']
-        data['win_times_rank'] = detail['overview'][1]['rank']
-        data['top10_times'] = detail['overview'][2]['value']
-        data['top10_times_rank'] = detail['overview'][2]['rank']
-        data['avg_kills'] = detail['overview'][3]['value']
-        data['avg_kills_rank'] = detail['overview'][3]['rank']
-        data['ranks'] = detail['overview'][4]['value']
-        data['win_ratio'] = detail['overview'][5]['value']
-        data['win_ratio_rank'] = detail['overview'][5]['rank']
-        data['top10_ratio'] = detail['overview'][6]['value']
-        data['top10_ratio_rank'] = detail['overview'][6]['rank']
-        data['k_d'] = detail['overview'][7]['value']
-        data['k_d_rank'] = detail['overview'][7]['rank']
+        data.setdefault('radar_score', {})
+        data['radar_score']['mode'] = rank['mode']
+        data['radar_score']['season'] = rank['season']
+        data['radar_score']['nickname'] = rank['nickname']
+
+        data['radar_score']['survive'] = detail['radar_score'][0]['value']
+        data['radar_score']['win_ratio'] = detail['radar_score'][1]['value']
+        data['radar_score']['support'] = detail['radar_score'][2]['value']
+        data['radar_score']['kills'] = detail['radar_score'][3]['value']
+        data['radar_score']['rating'] = detail['radar_score'][4]['value']
+
+        data.setdefault('fight_behavior', {})
+        data['fight_behavior']['mode'] = rank['mode']
+        data['fight_behavior']['season'] = rank['season']
+        data['fight_behavior']['nickname'] = rank['nickname']
+
+        data['fight_behavior']['rating'] = detail['stats'][0]['score_value']
+        data['fight_behavior']['degree'] = detail['stats'][0]['score']
+        data['fight_behavior']['avg_kills'] = detail['stats'][0]['overview'][0]['value']
+        data['fight_behavior']['avg_kills_degree'] = detail['stats'][0]['overview'][0]['score']
+        data['fight_behavior']['avg_damage'] = detail['stats'][0]['overview'][1]['value']
+        data['fight_behavior']['avg_damage_degree'] = detail['stats'][0]['overview'][1]['score']
+        data['fight_behavior']['avg_head_shoot'] = detail['stats'][0]['overview'][2]['value']
+        data['fight_behavior']['avg_head_shoot_degree'] = detail['stats'][0]['overview'][2]['score']
+        data['fight_behavior']['head_shoot_ratio'] = detail['stats'][0]['overview'][3]['value']
+        data['fight_behavior']['head_shoot_ratio_degree'] = detail['stats'][0]['overview'][3]['score']
+        data['fight_behavior']['max_kills'] = detail['stats'][0]['overview'][4]['value']
+        data['fight_behavior']['max_continuous_kills'] = detail['stats'][0]['overview'][5]['value']
+        data['fight_behavior']['max_kills_distence'] = detail['stats'][0]['overview'][6]['value']
+        data['fight_behavior']['avg_road_kills'] = detail['stats'][0]['overview'][7]['value']
+        data['fight_behavior']['avg_road_kills_degree'] = detail['stats'][0]['overview'][7]['score']
+        data['fight_behavior']['avg_car_distory'] = detail['stats'][0]['overview'][8]['value']
+        data['fight_behavior']['avg_car_distory_degree'] = detail['stats'][0]['overview'][8]['score']
+
         yield data
+
+        # overview = {}
+        # overview['result'] = 'success'
+        # overview['type'] = 'overview'
+        #
+        # overview['mode'] = rank['mode']
+        # overview['season'] = rank['season']
+        # overview['nickname'] = rank['nickname']
+        #
+        # overview['rateing'] = detail['overview'][0]['value']
+        # overview['win_times'] = detail['overview'][1]['value']
+        # overview['win_times_rank'] = detail['overview'][1]['rank']
+        # overview['top10_times'] = detail['overview'][2]['value']
+        # overview['top10_times_rank'] = detail['overview'][2]['rank']
+        # overview['avg_kills'] = detail['overview'][3]['value']
+        # overview['avg_kills_rank'] = detail['overview'][3]['rank']
+        # overview['ranks'] = detail['overview'][4]['value']
+        # overview['win_ratio'] = detail['overview'][5]['value']
+        # overview['win_ratio_rank'] = detail['overview'][5]['rank']
+        # overview['top10_ratio'] = detail['overview'][6]['value']
+        # overview['top10_ratio_rank'] = detail['overview'][6]['rank']
+        # overview['k_d'] = detail['overview'][7]['value']
+        # overview['k_d_rank'] = detail['overview'][7]['rank']
+        # yield overview
+
     except Exception as e:
-        print('get_player_overview() error,', str(e))
-        data = {}
+        print('get_player_data() error,', str(e))
+        # data = {}
+        # data.setdefault('overview', [])
         # data['overview']['result'] = 'error'
+        # yield data
+        data = {}
         data['result'] = 'error'
         yield data
 
@@ -157,19 +200,23 @@ def put_into_queue1(queue1, url, headers):
         if 'fpp' not in rank['mode']:
             p['fpp'] = '0'
             p['mode'] = rank['mode']
-            for data in get_player_overview(rank,url, p, headers):
+            for data in get_player_data(rank,url, p, headers):
                 if data['result'] == 'success':
                     queue1.put_nowait(data)
                 elif data['result'] == 'error':
                     continue
+        else:
+            pass
 
 def get_from_queue1(queue1, db):
     while True:
         try:
             data = queue1.get_nowait()
-            if data['type'] == 'overview':
-                db.save_one_data_to_player_overview(data)
-                queue1.task_done()
+            # if data['type'] == 'overview':
+            db.save_one_data_to_player_overview(data['overview'])
+            db.save_one_data_to_radar_score(data['radar_score'])
+            db.save_one_data_to_fight_behavior(data['fight_behavior'])
+            queue1.task_done()
             # elif data['overview']['type'] == 'distribution':
             #     db.save_one_data_to_distribution(data)
             #     queue.task_done()
@@ -199,10 +246,10 @@ if __name__ == '__main__':
     # params = {'mode': mode, 'season': season, 'category': category}
     # # url = 'https://api.xiaoheihe.cn/game/pubg/get_player_leaderboards/?lang=zh-cn&os_type=iOS&os_version=10.3.3&version=1.1.52&device_id=D2AA4D4F-AC80-476C-BFE1-CBD83AB74133&heybox_id=5141514&limit=30&offset=0&mode=solo&season=pc-2018-02&category=WinRatio'
     # url = 'https://api.xiaoheihe.cn/game/pubg/get_player_leaderboards/'
+
     headers = {
         'User-Agent': 'xiaoheihe/1.1.52 (iPhone; iOS 10.3.3; Scale/2.00)'
     }
-    # print(requests.get(url,params=params,headers=headers).json())
     configs = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'db': 'pubg_steam'}
     db = DbHelper()
     db.connenct(configs)
