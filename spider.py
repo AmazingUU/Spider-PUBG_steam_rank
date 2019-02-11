@@ -173,7 +173,7 @@ if __name__ == '__main__':
         # 利用线程池的优点在于便于控制线程数量，生产线程池中最多有五个生产线程，提高了生产效率，又不会在线程间切换花费太多时间
         put_thread_pool.apply_async(put_into_pool, (queue, url1, par[i], headers))
 
-    time.sleep(3)  # 让生产者先生产3s，保证queue中有初始数据量
+    time.sleep(5)  # 让生产者先生产5s，保证queue中有初始数据量
 
     get_thread_pool.apply_async(get_from_pool, (queue, db))
 
